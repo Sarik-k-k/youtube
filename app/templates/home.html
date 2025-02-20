@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Video Downloader & Converter | Download Videos, Audio & Playlists Free{% endblock %}
+
+{% block content %}
+<style>
+  /* Base Styles */
+  .container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .container h3,
+  .container p {
+    color: #000;
+  }
+
+  .mainheading {
+    margin-top: 7px;
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    text-align: center;
+  }
+  .lead {
+    font-size: 0.9rem;
+    /* margin: 0.2rem; */
+  }
+
+  
+
+  .lead {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .midad{
+    display: block;
+    height: 90px;
+    background-color: whitesmoke;
+
+
+  }
+
+  /* Stats Section */
+  .stats {
+    
+    padding: 0.2rem;
+    margin: 1rem 0;
+    text-align: center;
+    background-color: #000000;
+  }
+
+  .stats-grid {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .stat-item {
+    flex: 1;
+    margin: 0 1rem;
+    font-size: small;
+  }
+
+  .stat-item strong {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.1rem;
+    font-size: 1.5rem
+  }
+
+  /* Card Grid using Flex */
+  .card-grid {
+    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin: 1rem 0;
+  }
+
+  .card {
+    background-color: #000;
+    padding: 0.5rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+    /* For larger screens: four cards per row */
+    flex: 1 1 calc(25% - 2rem);
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.1rem 0.1rem;
+    color: #000;
+    font-size: small;
+    font-weight: 600;
+    background-color: #fff;
+    text-decoration: none;
+    border: 1px solid #fff;
+    transition: all 0.3s ease;
+    margin-top: auto;
+  }
+
+  .btn:hover {
+    color: #ffffff;
+    background-color: #000;
+  }
+
+  .card-body p {
+    font-size: x-small;
+    color: #ffffff;
+    margin: 0.5rem 0;
+  }
+
+  .card-body h3{
+    margin: 0;
+    font-size: small;
+    color: #ffffff;
+  }
+
+  /* Features Section */
+  .features {
+  padding: 0 0.4rem;
+    margin: 1.2rem 0;
+  }
+  .features h2, h4{
+    color: #000;
+    margin-bottom: 0.5rem;
+  }
+  
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+
+  .feature-item {
+    
+    padding: 1rem;
+    /* Two items per row for features is fixed via flex */
+    flex: 1 1 calc(50% - 2rem);
+  }
+  
+  /* How-To Section */
+  .how-to-section {
+    background-color: #000;
+    padding: 0.8rem 2rem 0.5rem 2rem;
+    margin-top: 0;
+  }
+
+  .how-to-section h2 {
+    color: #ffffff;
+    text-align: center;
+    
+    margin-bottom: 0.7rem;
+  }
+  .how-to-section h3{
+    color: #ffffff;
+    margin-bottom: 0rem !important;
+  }
+
+  .how-to-section article {
+    margin-bottom: 1rem;
+  }
+
+  .how-to-section ol {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 1rem 0;
+    
+  }
+
+  .how-to-section li {
+    margin-bottom: 0.5rem;
+  }
+
+  /* FAQ Section */
+  .faq-section {
+    margin: 1.5rem 0;
+  }
+
+  .faq-section h2 {
+    color: #000;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+
+  details {
+  
+    padding: 0.5rem;
+    margin-bottom: 0rem;
+  }
+
+  summary {
+    color: #000;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  details p {
+    color: #000;
+    margin-top: 1rem;
+    padding-left: 1rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .mainheading{
+      margin-top: 5px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .lead{
+      font-size: 0.8rem;
+    }
+    .card-grid{
+      gap: 1rem;
+    }
+    .midad{
+      height: 80px;
+      margin-bottom: 5px;
+    }
+
+    .card {
+      /* For small screens: force two cards per row */
+      flex: 1 1 calc(50% - 2rem);
+    }
+
+    .btn{
+      font-size: 0.7rem;
+    }
+    .feature-item{
+      padding: 0.5rem;
+    }
+    .how-to-section{
+      padding: 0.6rem 1.5rem 0.4rem 1.5rem;
+    }
+    .how-to-section h2{
+      font-size: 1.3rem;
+    }
+    .how-to-section h3{
+      font-size: 1rem;
+    }
+    .how-to-section article{
+      margin-bottom: 1rem;
+    }
+    .how-to-section ol li{
+      font-size: 0.7rem;
+      margin-bottom: 0.3rem;
+    }
+  }
+  @media (max-width: 600px){
+    .features h2{
+      font-size: 1rem;
+    }
+    .features h4{
+      font-size: 0.8rem;
+    }
+    .feature-p{
+      font-size: 0.7rem !important;
+  
+    }
+  }
+
+  
+  
+  @media (max-width: 480px) {
+    .stat-item strong {
+      font-size: 1rem;
+    }
+    .stat-item span{
+      font-size: 0.7rem;
+    }
+    .midad{
+      height: 70px;
+    }
+    .card-grid{
+      gap: 0.3rem;
+    }
+    .card-body h3{
+      font-size: 0.7rem;
+    }
+    
+  }@media (max-width: 400px){
+    .mainheading{
+      font-size: 1rem;
+    }
+    .lead{
+      font-size: 0.7rem;
+    }
+    .card-body h3{
+      font-size: 0.6rem;
+    }
+    .card-body p{
+      font-size: 0.6rem;
+    }
+    .btn{
+      font-size: 0.6rem;
+    }
+    .feature-item{
+      padding: 0.3rem;
+    }
+    .feature-p{
+      font-size: 0.6rem !important;
+    }
+    .stat-item strong {
+      font-size: 0.8rem;
+    }
+    .stat-item span{
+      font-size: 0.6rem;
+    }
+    .how-to-section h2{
+      font-size: 1rem;
+    }
+    .how-to-section article{
+      margin-bottom: 1rem;
+    }
+    .how-to-section ol{
+      padding-left: 1rem;
+      padding: 0.2rem 1 0.2rem 1;
+    }
+    .how-to-section li{
+      margin-bottom: 0.3rem;
+    }
+    .faq-section{
+      margin: 2rem 0;
+    }
+    details{
+      padding: 0.5rem;
+    }
+    summary{
+      font-size: 0.8rem;
+    }
+    details p{
+      font-size: 0.7rem;
+    }
+
+  }
+  
+</style>
+
+<main class="container">
+  <div class="midad"></div>
+  <h3 class="mainheading">YouTube Downloader</h3>
+  <p class="lead">Experience lightning-fast downloads, high-quality video & audio downloading, and easy playlist and thumbnail downloads—all completely free, with no registration required!</p>
+
+
+
+  <!-- Main Features Grid -->
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-body">
+        <h3>HD Video Download</h3>
+        <p>Download videos in HD quality up to 4K resolution</p>
+        <a href="{{ url_for('main.video_download') }}" class="btn">Download Video</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Audio Extraction</h3>
+        <p>Convert videos to MP3 with high-quality audio</p>
+        <a href="{{ url_for('main.audio_download') }}" class="btn">Extract Audio</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Playlist Download</h3>
+        <p>Download entire playlists with one click</p>
+        <a href="{{ url_for('main.playlist_download') }}" class="btn">Download Playlist</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Thumbnail Download</h3>
+        <p>Get high-quality thumbnails instantly</p>
+        <a href="{{ url_for('main.thumbnail_download') }}" class="btn">Get Thumbnail</a>
+      </div>
+    </div>
+  </div>
+  <div class="midad"></div>
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <strong>10M+</strong>
+        <span>Downloads</span>
+      </div>
+      <div class="stat-item">
+        <strong>99.9%</strong>
+        <span>Success Rate</span>
+      </div>
+      <div class="stat-item">
+        <strong>100%</strong>
+        <span>Safe & Secure</span>
+      </div>
+    </div>
+  </section>
+  <div class="midad"></div>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>Why Choose Our YouTube Downloader?</h2>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <h4>✓ High Quality Downloads</h4>
+        <p class="feature-p">Support for all video qualities up to 4K resolution. Choose the format that works best for you.</p>
+      </li>
+      <li class="feature-item">
+        <h4>✓ Fast & Free</h4>
+        <p class="feature-p">Lightning-fast downloads with no registration required. No hidden fees or subscriptions.</p>
+      </li>
+      <li class="feature-item">
+        <h4>✓ Multiple Formats</h4>
+        <p class="feature-p">Download as MP4, WebM, MP3, WAV, and more. Compatible with all devices.</p>
+      </li>
+      <li class="feature-item">
+        <h4>✓ Secure Downloads</h4>
+        <p class="feature-p">100% safe with no malware or unwanted software. Your privacy is our priority.</p>
+      </li>
+    </ul>
+  </section>
+  <div class="midad"></div>
+  <!-- How-To Section -->
+  <section class="how-to-section">
+    <h2>How to Download From YouTube</h2>
+    <article>
+      <h3>Download Videos in HD Quality</h3>
+      <ol>
+        <li>Copy the YouTube video URL from your browser</li>
+        <li>Paste the URL into our video downloader</li>
+        <li>Choose your preferred quality (up to 4K available)</li>
+        <li>Click "Download" and save your video</li>
+      </ol>
+    </article>
+  
+    <article>
+      <h3>Convert Videos to MP3</h3>
+      <ol>
+        <li>Copy the YouTube video URL</li>
+        <li>Select "Extract Audio" option</li>
+        <li>Choose MP3 format and quality</li>
+        <li>Download your audio file</li>
+      </ol>
+    </article>
+
+    <article>
+      <h3>Download Full Playlists</h3>
+      <ol>
+        <li>Copy the playlist URL from YouTube</li>
+        <li>Choose download type (video or audio)</li>
+        <li>Select quality preferences</li>
+        <li>Start downloading the entire playlist</li>
+      </ol>
+    </article>
+  </section>
+  <div class="midad"></div>
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <details>
+      <summary>Is it safe to download YouTube videos?</summary>
+      <p>Yes, our service is 100% safe and secure. We don't store any videos on our servers and use direct downloads.
+        All transfers are encrypted and we don't collect personal data.</p>
+    </details>
+
+    <details>
+      <summary>What video formats are supported?</summary>
+      <p>We support all major formats including MP4, WebM, and 3GP for videos, and MP3, WAV for audio. You can choose
+        the quality up to 4K resolution depending on the original video quality.</p>
+    </details>
+
+    <details>
+      <summary>How fast are the downloads?</summary>
+      <p>Download speed depends on your internet connection and the video size. Most downloads start within seconds. We
+        use optimized servers worldwide to ensure the fastest possible speeds.</p>
+    </details>
+
+    <details>
+      <summary>Do I need to install any software?</summary>
+      <p>No, our service works entirely through your web browser. There's no need to install any additional software or
+        browser extensions.</p>
+    </details>
+
+    <details>
+      <summary>Is this service really free?</summary>
+      <p>Yes, our service is completely free to use. We don't require any registration or subscription, and there are no
+        hidden fees.</p>
+    </details>
+  </section>
+  <div class="midad"></div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta name="description" content="Download entire YouTube playlists quickly and easily. Choose to download videos or audio from your favorite playlists with YouTube Utility.">
+  <link rel="canonical" href="https://downloadyoutube.in/playlist_download">
+{% endblock %}
+
+{% block title %}Playlist Download | YouTube Utility{% endblock %}
+
+{% block content %}
+<style>
+  .download-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #000000;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    text-align: center;
+    position: relative;
+  }
+  
+  .download-container h1 {
+    font-size: 1.75rem;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  input[type="url"], select {
+    padding: 10px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    background: transparent;
+    color: #ffffff;
+    font-size: 1rem;
+  }
+  
+  input[type="url"]::placeholder, select {
+    color: #ffffff;
+    opacity: 0.7;
+  }
+  
+  button {
+    padding: 10px 16px;
+    border: 1px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  button:hover {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  /* How-To Section */
+  .how-to-section {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #111111;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+  
+  .how-to-section h2 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .how-to-section ol {
+    list-style: decimal outside;
+    padding-left: 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .how-to-section li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* FAQ Section */
+  .faq-section {
+    max-width: 600px;
+    margin: 40px auto;
+  }
+  
+  .faq-section h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #000000;
+  }
+  
+  .faq-section details {
+    border: 1px solid #ffffff;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #222222;
+    border-radius: 4px;
+  }
+  
+  .faq-section summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .faq-section p {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+    padding-left: 1rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .download-container,
+    .how-to-section,
+    .faq-section {
+      margin: 20px;
+      padding: 15px;
+    }
+  
+    .download-container h1,
+    .how-to-section h2,
+    .faq-section h2 {
+      font-size: 1.25rem;
+    }
+  
+    form,
+    .how-to-section ol,
+    .faq-section p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .download-container,
+    .how-to-section,
+    .faq-section {
+      margin: 15px;
+      padding: 10px;
+    }
+  
+    input[type="url"],
+    select,
+    button {
+      font-size: 0.6rem;
+      padding: 0.3rem;
+    }
+  
+    .download-container h1,
+    .how-to-section h2,
+    .faq-section h2 {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+  
+    form,
+    .how-to-section ol,
+    .faq-section p {
+      font-size: 0.6rem;
+    }
+  }
+  .download-container {
+  position: relative; /* ensure container is positioned for absolute child */
+}
+
+.loader-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; /* adjust if needed */
+  }
+
+  .spinner {
+  width: 80px;
+  height: 80px;
+  border: 6px solid whitesmoke;
+  box-shadow: 1px 1px 15px rgba(250, 208, 207, 0.42),
+              -1px -1px 10px rgba(250, 246, 207, 0.42),
+              1px -1px 15px rgba(250, 246, 207, 0.42),
+              -1px 1px 10px rgba(250, 246, 207, 0.42);
+  border-radius: 43%;
+  animation: spin 0.9s linear infinite;
+  position: relative;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.loading-text {
+  background-color: #000000;
+  margin-top: 15px;
+  color: #3498db;
+  font-size: 1.1rem;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  letter-spacing: 0.5px;
+  
+}
+</style>
+
+<div class="download-container">
+  <div id="loader-overlay" class="loader-overlay">
+    <div class="spinner"></div>
+    <p class="loading-text">Please wait, processing your download...</p>
+  </div>
+  <h1>Download YouTube Playlist</h1>
+  <form method="POST">
+    <input type="url" name="url" placeholder="Enter Playlist URL" required>
+    <select name="type">
+      <option value="video">Download Videos</option>
+      <option value="audio">Download Audio</option>
+    </select>
+    <button type="submit">Download Playlist</button>
+  </form>
+  <iframe name="hiddenDownloadFrame" style="display: none;"></iframe>
+</div>
+
+<!-- How-To Download Section -->
+<section class="how-to-section">
+  <h2>How to Download a Playlist</h2>
+  <ol>
+    <li>Copy the URL of the YouTube playlist you want to download.</li>
+    <li>Paste the URL into the input field above.</li>
+    <li>Select whether you want to download the videos or audio from the playlist.</li>
+    <li>Click the “Download Playlist” button.</li>
+    <li>Your download will start shortly, and you'll receive all the content from the playlist.</li>
+  </ol>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+  <details>
+    <summary>Can I download private playlists?</summary>
+    <p>Private playlists cannot be downloaded unless you have the necessary permissions to access the content.</p>
+  </details>
+  <details>
+    <summary>Is there a limit on the number of videos in a playlist?</summary>
+    <p>No, you can download playlists of any size; however, larger playlists may take longer to process.</p>
+  </details>
+  <details>
+    <summary>What formats are available for download?</summary>
+    <p>The options include downloading as video (typically MP4) or audio (typically MP3). The available formats may vary.</p>
+  </details>
+  <details>
+    <summary>Do I need to register to use this service?</summary>
+    <p>No registration is required—our playlist download service is completely free to use.</p>
+  </details>
+</section>
+<script>
+  document.querySelector('form').addEventListener('submit', function(){
+  document.getElementById('loader-overlay').style.display = 'flex';
+  
+  // Fallback: Hide the loader after 10 seconds if load event doesn't fire.
+  setTimeout(function(){
+    document.getElementById('loader-overlay').style.display = 'none';
+  }, 10000);
+});
+
+// When the hidden iframe loads, hide the loader after a short delay.
+document.querySelector('iframe[name="hiddenDownloadFrame"]').addEventListener('load', function(){
+  setTimeout(function(){
+    document.getElementById('loader-overlay').style.display = 'none';
+  }, 1000);
+});
+
+</script>
+{% endblock %}

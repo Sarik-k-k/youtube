@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta name="description" content="Download high quality YouTube videos quickly and securely. Enter a YouTube URL and select your preferred quality to download your video with ease.">
+  <link rel="canonical" href="https://downloadyoutube.in/video_download">
+{% endblock %}
+
+{% block title %}Video Download | YouTube Utility{% endblock %}
+
+{% block content %}
+<style>
+  main {
+    margin: 0;
+  }
+  
+  .download-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #000000;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .download-container h1 {
+    font-size: 1.75rem;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  input[type="url"],
+  select {
+    padding: 10px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    background: transparent;
+    color: #ffffff;
+    font-size: 1rem;
+  }
+  
+  input[type="url"]::placeholder {
+    color: #ffffff;
+    opacity: 0.7;
+  }
+  
+  option {
+    color: #000000;
+  }
+  
+  button {
+    padding: 10px 16px;
+    border: 1px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  button:hover {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  /* How-To Section */
+  .how-to-section {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #111111;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+  
+  .how-to-section h2 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .how-to-section ol {
+    list-style: decimal outside;
+    padding-left: 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .how-to-section li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* FAQ Section */
+  .faq-section {
+    max-width: 600px;
+    margin: 40px auto;
+  }
+  
+  .faq-section h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #000000;
+  }
+  
+  .faq-section details {
+    border: 1px solid #ffffff;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #222222;
+    border-radius: 4px;
+  }
+  
+  .faq-section summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .faq-section p {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+    padding-left: 1rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+
+    .download-container,
+    .how-to-section,
+    .faq-section {
+      margin: 20px;
+      padding: 15px;
+    }
+  
+    .download-container h1,
+    .how-to-section h2,
+    .faq-section h2 {
+      font-size: 1.25rem;
+    }
+  
+    form,
+    .how-to-section ol,
+    .faq-section p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .download-container,
+    .how-to-section,
+    .faq-section {
+      margin: 15px;
+      padding: 10px;
+    }
+  
+    input[type="url"],
+    select,
+    button {
+      font-size: 0.6rem;
+      padding: 0.3rem;
+    }
+  
+    .download-container h1,
+    .how-to-section h2,
+    .faq-section h2 {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+  
+    form,
+    .how-to-section ol,
+    .faq-section p {
+      font-size: 0.6rem;
+    }
+   
+  }
+  @media (max-width: 400px) {
+    .download-container,
+    .how-to-section,
+    .faq-section {
+      margin: 10px;
+      padding: 5px;
+    }
+  
+    input[type="url"],
+    select,
+    button {
+      font-size: 0.5rem;
+      padding: 0.2rem;
+    }
+  
+    .download-container h1,
+    .how-to-section h2,
+    .faq-section h2 {
+      font-size: 0.8rem;
+      margin-bottom: 0.1rem;
+    }
+    
+    form,
+    .how-to-section ol,
+    .faq-section p {
+      font-size: 0.5rem;
+    }
+    
+
+  }
+  .download-container {
+  position: relative; /* ensure container is positioned for absolute child */
+}
+
+.loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* adjust as needed */
+}
+
+.spinner {
+  width: 80px;
+  height: 80px;
+  border: 6px solid whitesmoke;
+  box-shadow: 1px 1px 15px rgba(250, 208, 207, 0.42),
+              -1px -1px 10px rgba(250, 246, 207, 0.42),
+              1px -1px 15px rgba(250, 246, 207, 0.42),
+              -1px 1px 10px rgba(250, 246, 207, 0.42);
+  border-radius: 43%;
+  animation: spin 0.8s linear infinite;
+  position: relative;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.loading-text {
+  background-color: #000000;
+  margin-top: 15px;
+  color: #3498db;
+  font-size: 1.1rem;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  letter-spacing: 0.5px;
+  
+}
+</style>
+<main>
+
+  <div class="download-container">
+    <div id="loader-overlay" class="loader-overlay">
+      <div class="spinner"></div>
+      <p class="loading-text">Please wait, processing your download...</p>
+    </div>
+    <h1>Download YouTube Video</h1>
+    <form method="POST">
+      <input type="url" name="url" placeholder="Enter YouTube URL" required>
+      <select name="quality">
+        <option value="highest">Highest Quality</option>
+        <option value="standard">Standard Quality</option>
+      </select>
+      <button type="submit">Download</button>
+    </form>
+    <iframe name="hiddenDownloadFrame" style="display: none;"></iframe>
+  </div>
+  
+  <!-- How-To Download Section -->
+  <section class="how-to-section">
+    <h2>How to Download a Video from Our Website</h2>
+    <ol>
+      <li>Copy the URL of your desired YouTube video.</li>
+      <li>Paste the URL into the input field above.</li>
+      <li>Select your preferred video quality.</li>
+      <li>Click the “Download” button.</li>
+      <li>Your video will begin downloading in just a few seconds.</li>
+    </ol>
+  </section>
+  
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>Is downloading videos legal?</summary>
+      <p>Downloading videos from YouTube is subject to copyright laws. Please ensure you have the rights to download the video content.</p>
+    </details>
+    <details>
+      <summary>What video formats are supported?</summary>
+      <p>Our service supports several formats including MP4. The exact formats may depend on the video source.</p>
+    </details>
+    <details>
+      <summary>Do I need to install any software?</summary>
+      <p>No installation is required. Our tool works entirely within your web browser.</p>
+    </details>
+    <details>
+      <summary>Are there any fees?</summary>
+      <p>The video download service is completely free and does not require registration.</p>
+    </details>
+  </section>
+</main>
+<script>
+  document.querySelector('form').addEventListener('submit', function(){
+  document.getElementById('loader-overlay').style.display = 'flex';
+  
+  // Fallback: Hide the loader after 10 seconds if load event doesn't fire.
+  setTimeout(function(){
+    document.getElementById('loader-overlay').style.display = 'none';
+  }, 10000);
+});
+
+// When the hidden iframe loads, hide the loader after a short delay.
+document.querySelector('iframe[name="hiddenDownloadFrame"]').addEventListener('load', function(){
+  setTimeout(function(){
+    document.getElementById('loader-overlay').style.display = 'none';
+  }, 1000);
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <title>{% block title %}YouTube Utility{% endblock %}</title>
+  <meta name="description"
+    content="Download YouTube videos, extract audio, download full playlists, and get high-quality thumbnails quickly and securely with YouTube Utility.">
+  <link rel="canonical" href="https://downloadyoutube.in/">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="YouTube Utility - Download YouTube Videos, Audio, Playlists, Thumbnails">
+  <meta property="og:description"
+    content="Download YouTube videos, extract audio, download entire playlists, and get high-quality thumbnails easily.">
+  <meta property="og:url" content="https://downloadyoutube.in/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://downloadyoutube.in/static/images/og-image.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="YouTube Utility - Download Videos, Audio, Playlists, Thumbnails">
+  <meta name="twitter:description"
+    content="Download YouTube videos, extract audio, download playlists, and get video thumbnails with ease.">
+  <meta name="twitter:image" content="https://downloadyoutube.in/static/images/twitter-card.jpg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://downloadyoutube.in/",
+      "name": "YouTube Utility",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://downloadyoutube.in/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+
+  {% block head %}{% endblock %}
+
+  <style>
+    /* Reset and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      color: #ffffff;
+
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+
+      background-color: #000000;
+      border-bottom: 1px solid #ffffff;
+      padding: 0.3rem 0;
+      margin-bottom: 5px;
+    }
+
+    .nav-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
+
+    .navbar-brand {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      width: 70%;
+
+
+    }
+
+    .nav-link {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.1rem 0.2rem;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      transition: all 0.5s ease;
+      float: right;
+
+    }
+
+    .nav-link:hover {
+      color: #000000;
+      border-color: #000000;
+      background-color: #ffffff;
+
+      transform: scale(1.1);
+    }
+
+    .staticbottomad {
+      z-index: 1000;
+      position: fixed;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      height: 90px;
+      background-color: rgb(237, 237, 237);
+    }
+
+    .side-ad {
+      position: fixed;
+      top: 0;
+      width: 160px;
+      height: 600px;
+      background-color: #f1f1f1;
+    }
+
+    /* Side Ads Base */
+    .side-ad {
+      position: fixed;
+      background-color: #f1f1f1;
+      overflow: hidden;
+      z-index: 900;
+    }
+
+    /* Left Ad positioned at the left edge */
+    .left-ad {
+      left: 0;
+    }
+
+    /* Right Ad positioned at the right edge */
+    .right-ad {
+      right: 0;
+    }
+
+    /* Content Container */
+
+
+    /* Responsive Design */
+
+    @media (max-width: 960px) {
+      .nav-container {
+        padding: 0 0.5rem;
+      }
+
+      .navbar {
+        padding: 0.7rem 0;
+      }
+
+      .navbar-brand {
+        font-size: 1.2rem;
+      }
+
+      .nav-link {
+        padding: 0 0.1rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      .nav-container {
+        /* flex-direction: column; */
+        /* grid-template-columns: 2fr 1fr; */
+        gap: 0.5rem;
+        margin-right: 0;
+        margin-left: 2rem;
+      }
+
+      .nav-list {
+        /* flex-wrap: wrap; */
+        justify-content: center;
+        gap: 0.2rem;
+        float: right;
+        margin-left: auto;
+
+
+      }
+
+      .navbar {
+        padding: 0.5rem 0;
+      }
+
+      .nav-link {
+        padding: 0.25rem 0.5;
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 740px) {
+      .nav-container {
+        gap: 1.5rem;
+        margin-left: 1rem;
+        margin-right: 0;
+      }
+
+      .navbar {
+        padding: 0.3rem 0;
+      }
+
+      .navbar-brand {
+        width: 35%;
+        font-size: 1rem;
+      }
+
+      .nav-list {
+        padding: 0;
+        margin: 0;
+        float: right;
+        margin-left: auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.1rem;
+
+
+      }
+
+      .nav-list li {
+        justify-content: center;
+      }
+
+      .nav-link {
+        margin: 0;
+        padding: 0;
+        font-size: 0.8rem;
+        float: right;
+        margin-left: auto;
+      }
+
+      .nav-link {
+        float: left;
+        font-size: 0.7rem;
+      }
+
+      .staticbottomad {
+        height: 80px;
+      }
+    }
+
+    @media (max-width: 425px) {
+      .nav-container {
+        margin: 0;
+        gap: 0.2rem;
+      }
+
+      .navbar-brand {
+        font-size: 0.7rem;
+        width: 50%;
+      }
+
+      .nav-link {
+        font-size: 0.6rem;
+      }
+
+      .nav-container {
+        width: 100%;
+        gap: 0rem;
+      }
+
+      @media (max-width: 345px) {
+        .nav-link {
+          font-size: 0.5rem;
+        }
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a class="navbar-brand" href="{{ url_for('main.home') }}">YouTube Utility</a>
+      <ul class="nav-list">
+        <li><a class="nav-link" href="{{ url_for('main.video_download') }}">Video Download</a></li>
+        <li><a class="nav-link" href="{{ url_for('main.audio_download') }}">Audio Download</a></li>
+        <li><a class="nav-link" href="{{ url_for('main.playlist_download') }}">Playlist Download</a></li>
+        <li><a class="nav-link" href="{{ url_for('main.thumbnail_download') }}">Thumbnail Download</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="content-container">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div class="staticbottomad"></div>
+</body>
+<script>
+  function adjustContentMargin() {
+    const navbarHeight = document.querySelector('.navbar').offsetHeight;
+    document.querySelector('.content-container').style.marginTop = (navbarHeight + 5) + 'px';
+
+    const buttomAdHeight = document.querySelector('.staticbottomad').offsetHeight;
+    document.querySelector('.content-container').style.marginBottom = (navbarHeight + 50) + 'px';
+  }
+
+  
+
+  window.addEventListener('load', adjustContentMargin);
+  window.addEventListener('resize', adjustContentMargin);
+</script>
+
+</html>
