@@ -2,108 +2,152 @@ import os
 import yt_dlp
 import unicodedata
 import re
+import random
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def get_rotating_user_agents():
+    """Return a list of user agents to rotate through"""
+    return [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15'
+    ]
 
 def sanitize_filename(filename):
-    """
-    Sanitize filename to remove invalid characters and limit length.
-    """
+    """Sanitize filename to remove invalid characters and limit length."""
     filename = unicodedata.normalize('NFKD', filename).encode('ascii', 'ignore').decode('ascii')
     filename = re.sub(r'[^\w\-_\. ]', '_', filename)
-    max_length = 255
-    return filename[:max_length]
+    return filename[:255]  # Windows max filename length
 
-def download_youtube_content(url, download_type='video'):
-    """
-    Universal downloader for YouTube videos and playlists.
-    
-    Args:
-        url (str): YouTube video or playlist URL.
-        download_type (str): 'video', 'audio', or 'playlist'.
-    
-    Returns:
-        str: Path to downloaded content.
-    """
-    base_download_dir = 'D:/testing projects/youtube all features/app/downloads'
-    video_dir = os.path.join(base_download_dir, 'videos')
-    audio_dir = os.path.join(base_download_dir, 'audio')
-    playlist_dir = os.path.join(base_download_dir, 'playlists')
-    
-    os.makedirs(video_dir, exist_ok=True)
-    os.makedirs(audio_dir, exist_ok=True)
-    os.makedirs(playlist_dir, exist_ok=True)
+def get_download_options(download_type, base_path):
+    """Get download options based on content type"""
+    common_opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'nocheckcertificate': True,
+        'geo_bypass': True,
+        'geo_bypass_country': 'US',
+        'http_headers': {
+            'User-Agent': random.choice(get_rotating_user_agents()),
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+        },
+        'extractor_args': {
+            'youtube': {
+                'skip': ['dash', 'hls'],
+                'player_skip': ['webpage', 'configs']
+            }
+        },
+        'socket_timeout': 10,
+        'retries': 3,
+        'file_access_retries': 3,
+        'fragment_retries': 3,
+        'restrictfilenames': True,
+        'nooverwrites': True,
+        'no_color': True,
+        'progress_hooks': [print_progress]
+    }
 
-    # Select appropriate options based on the requested download type.
-    if download_type == 'video':
-        ydl_opts = {
-            'format': 'bestvideo+bestaudio/best',
+    type_specific_opts = {
+        'video': {
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             'merge_output_format': 'mp4',
-            'outtmpl': os.path.join(video_dir, '%(title)s.%(ext)s')
-        }
-    elif download_type == 'audio':
-        ydl_opts = {
+            'outtmpl': os.path.join(base_path, 'videos', '%(title)s.%(ext)s')
+        },
+        'audio': {
             'format': 'bestaudio/best',
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192'
             }],
-            'outtmpl': os.path.join(audio_dir, '%(title)s.%(ext)s')
-        }
-    elif download_type == 'playlist':
-        ydl_opts = {
-            'format': 'bestvideo+bestaudio/best',
+            'outtmpl': os.path.join(base_path, 'audio', '%(title)s.%(ext)s')
+        },
+        'playlist': {
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             'merge_output_format': 'mp4',
-            'outtmpl': os.path.join(playlist_dir, '%(playlist_title)s', '%(title)s.%(ext)s')
+            'outtmpl': os.path.join(base_path, 'playlists', '%(playlist_title)s', '%(title)s.%(ext)s'),
+            'yes_playlist': True,
+            'playlist_items': '1-50'  # Limit to first 50 items
         }
-    else:
-        raise ValueError("Invalid download type")
+    }
 
-    ydl_opts.update({
-        'restrictfilenames': True,
-        'nooverwrites': True,
-        'no_color': True,
-        'progress_hooks': [print_progress]
-    })
+    return {**common_opts, **type_specific_opts.get(download_type, {})}
+
+def download_youtube_content(url, download_type='video'):
+    """
+    Universal downloader for YouTube content with fallback mechanisms.
+    
+    Args:
+        url (str): YouTube URL
+        download_type (str): 'video', 'audio', or 'playlist'
+    
+    Returns:
+        str: Path to downloaded content
+    """
+    # Use /tmp for Render.com, local directory for development
+    base_path = '/tmp/downloads' if os.environ.get('RENDER') else 'downloads'
+    
+    # Ensure directories exist
+    for dir_type in ['videos', 'audio', 'playlists']:
+        os.makedirs(os.path.join(base_path, dir_type), exist_ok=True)
 
     try:
-        # This single extract_info call performs extraction and downloads directly.
+        ydl_opts = get_download_options(download_type, base_path)
+        logger.info(f"Attempting download: {url} as {download_type}")
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
-            # If it's a playlist, adjust the reported download_path accordingly.
-            if 'entries' in info:
-                download_path = os.path.join(playlist_dir, info.get('playlist_title', 'Unnamed Playlist'))
-            else:
+            
+            if 'entries' in info:  # Playlist
+                download_path = os.path.join(base_path, 'playlists', 
+                                           sanitize_filename(info.get('playlist_title', 'Unnamed Playlist')))
+            else:  # Single video/audio
                 download_path = ydl.prepare_filename(info)
-                # For audio downloads, update the expected file extension to .mp3.
                 if download_type == 'audio':
-                    base, _ = os.path.splitext(download_path)
-                    download_path = base + '.mp3'
+                    download_path = os.path.splitext(download_path)[0] + '.mp3'
 
-            if not os.path.exists(download_path):
-                raise FileNotFoundError(f"File not found: {download_path}")
-
-        return download_path
+            if os.path.exists(download_path):
+                logger.info(f"Download successful: {download_path}")
+                return download_path
+            
+            raise FileNotFoundError(f"File not found after download: {download_path}")
 
     except Exception as e:
-        print(f"Download error: {e}")
+        logger.error(f"Download failed: {str(e)}")
+        # Try alternate method with different options
+        try:
+            alternate_opts = get_download_options(download_type, base_path)
+            alternate_opts.update({
+                'format': 'worst',  # Try lowest quality as fallback
+                'force_generic_extractor': True
+            })
+            
+            with yt_dlp.YoutubeDL(alternate_opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+                download_path = ydl.prepare_filename(info)
+                
+                if os.path.exists(download_path):
+                    logger.info(f"Alternate download successful: {download_path}")
+                    return download_path
+                
+        except Exception as e2:
+            logger.error(f"Alternate download failed: {str(e2)}")
+        
         return None
 
 def print_progress(d):
-    """Optional progress tracking hook"""
-    if d.get('status') == 'finished':
-        print('Download complete')
-    elif d.get('status') == 'downloading':
-        downloaded_bytes = d.get('downloaded_bytes', 0)
-        total_bytes = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
-        if total_bytes > 0:
-            percent = downloaded_bytes * 100 / total_bytes
-            print(f'Downloading: {percent:.1f}%')
-
-if __name__ == '__main__':
-    url = input("Enter YouTube URL (video/playlist): ")
-    # Directly download content without first caching info in a separate extraction.
-    result = download_youtube_content(url)
-    if result:
-        print(f"Successfully downloaded to: {result}")
-    else:
-        print("Download failed")
+    """Progress tracking hook with improved logging"""
+    if d['status'] == 'finished':
+        logger.info('Download completed successfully')
+    elif d['status'] == 'downloading':
+        try:
+            percent = d.get('_percent_str', 'N/A')
+            speed = d.get('_speed_str', 'N/A')
+            logger.info(f'Download progress: {percent} at {speed}')
+        except Exception:
+            pass
