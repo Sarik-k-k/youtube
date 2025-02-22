@@ -1,6 +1,6 @@
 flask==3.0.2
 python-dotenv==1.0.0
-yt-dlp==2024.2.14
+yt-dlp
 gunicorn==21.2.0
 flask-caching==2.1.0
 flask-limiter==3.5.0
