@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 import shutil
 from flask import current_app
+from .cookie_manager import get_youtube_cookies
 
 logger = logging.getLogger(__name__)
 
@@ -122,33 +123,35 @@ def download_youtube_content(url, content_type='video'):
         config = current_app.config
         ydl_opts = config['YOUTUBE_SETTINGS'].copy()
         
-        # Update output template based on content type
-        if content_type == 'audio':
-            ydl_opts.update({
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
-                'outtmpl': os.path.join(config['DOWNLOAD_PATHS']['audio'], '%(title)s.%(ext)s')
-            })
+        # Try to get cookies if available
+        if not config['IS_RENDER']:
+            cookie_file = get_youtube_cookies()
+            if cookie_file:
+                ydl_opts['cookiefile'] = cookie_file
+        
+        # Add mobile user agent for Render.com
+        if config['IS_RENDER']:
+            ydl_opts['http_headers'] = {
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36'
+            }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            if not info:
-                raise ValueError("No video information found")
-            
-            filename = ydl.prepare_filename(info)
-            if content_type == 'audio':
-                filename = os.path.splitext(filename)[0] + '.mp3'
-            
-            if os.path.exists(filename):
-                logger.info(f"Successfully downloaded: {filename}")
-                return filename
-            else:
-                raise FileNotFoundError(f"File not found after download: {filename}")
+            try:
+                info = ydl.extract_info(url, download=True)
+                if info:
+                    filename = ydl.prepare_filename(info)
+                    return filename
+            except Exception as e:
+                logger.error(f"Download failed: {e}")
+                
+                # Fallback to alternative format
+                ydl_opts.update({
+                    'format': 'worst[ext=mp4]/worst',
+                    'force_generic_extractor': True
+                })
+                info = ydl.extract_info(url, download=True)
+                return ydl.prepare_filename(info)
                 
     except Exception as e:
-        logger.error(f"Download failed: {str(e)}")
+        logger.error(f"Download failed: {e}")
         return None

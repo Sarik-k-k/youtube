@@ -32,9 +32,15 @@ class Config:
         'playlists': os.path.join(DOWNLOAD_DIR, 'playlists')
     }
     
+    # Add cookie settings
+    COOKIE_FILE = os.environ.get('YOUTUBE_COOKIE_FILE', 'cookies.txt')
+    BROWSER_COOKIE_PATH = os.environ.get('BROWSER_COOKIE_PATH', None)
+    
     # YouTube specific settings with enhanced configuration
     YOUTUBE_SETTINGS = {
         'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+        'cookiefile': COOKIE_FILE,
+        'cookiesfrombrowser': ('chrome',) if not IS_RENDER else None,
         'merge_output_format': 'mp4',
         'geo_bypass': True,
         'geo_bypass_country': os.environ.get('GEO_BYPASS_COUNTRY', 'US'),
